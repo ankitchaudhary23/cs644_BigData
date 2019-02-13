@@ -1,0 +1,40 @@
+<workflow-app name="FlightAnalysis_Workflow" xmlns="uri:oozie:workflow:0.5">
+    <start to="java-de03"/>
+    <kill name="Kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <action name="java-136b">
+        <java>
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <main-class>FlightTaxiAverage</main-class>
+            <arg>/user/my322/flightData/input/csv/*.csv</arg>
+            <arg>/user/my322/flightData/output/FlightTaxiAverage</arg>
+        </java>
+        <ok to="java-cfc8"/>
+        <error to="Kill"/>
+    </action>
+    <action name="java-cfc8">
+        <java>
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <main-class>FlightCancellation</main-class>
+            <arg>/user/my322/flightData/input/csv/*.csv</arg>
+            <arg>/user/my322/flightData/output/FlightCancellation</arg>
+        </java>
+        <ok to="End"/>
+        <error to="Kill"/>
+    </action>
+    <action name="java-de03">
+        <java>
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <main-class>FlightScheduleProb</main-class>
+            <arg>/user/my322/flightData/input/csv/*.csv</arg>
+            <arg>/user/my322/flightData/output/FlightScheduleProb</arg>
+        </java>
+        <ok to="java-136b"/>
+        <error to="Kill"/>
+    </action>
+    <end name="End"/>
+</workflow-app>
